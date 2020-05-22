@@ -17,7 +17,6 @@
             v-model="text"
             v-show="display"
             @keyup.enter="item.todo.content = text; display = !display"
-            @blur="item.todo.content = text; display = !display"
           />
           <button @click="shanchu(item)">删除</button>
         </li>

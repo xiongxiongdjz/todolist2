@@ -22,10 +22,6 @@
       <!-- v-show="todos.filter(todo => todo.model).length"表示有无完成项 除数字0以外都代表true 所以显示 -->
       <button @click="shanchuyiwancheng" v-show="todos.filter(todo => todo.model).length">删除已完成</button>
     </div>
-    <!-- <div class="watch">
-      <input type="text" v-model="msg" />
-      <input type="text" v-model="comsg" />
-    </div>-->
   </div>
 </template>
 
@@ -36,8 +32,6 @@ export default {
       newTodo: "",
       todos: [],
       wancheng: "suoyou",
-      msg: "123",
-      comsg: "",
       values: '',
       zt: false
     };

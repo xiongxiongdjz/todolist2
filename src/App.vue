@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <router-link to="/todolist2">2</router-link>
     <router-view />
   </div>
 </template>

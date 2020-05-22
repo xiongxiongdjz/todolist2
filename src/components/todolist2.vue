@@ -9,15 +9,10 @@
     </div>
     <div class="tidolist2-3">
       <ul>
-        <li v-for="item in filters" :key="item.id.id">
-          <button @click="item.finished.finished = !item.finished.finished">完成</button>
-          <span v-show="!display" @dblclick="display = !display;">{{item.todo.content}}</span>
-          <input
-            type="text"
-            v-model="text"
-            v-show="display"
-            @keyup.enter="item.todo.content = text; display = !display"
-          />
+        <li v-for="item in filters" :key="item.id">
+          <button @click="item.finished = !item.finished">完成</button>
+          <span v-show="!item.display" @dblclick="shuangji(item)">{{item.content}}</span>
+          <input type="text" v-model="text" v-show="item.display" @keyup.enter="inputEnter(item)" />
           <button @click="shanchu(item)">删除</button>
         </li>
       </ul>
@@ -26,7 +21,7 @@
       <button @click="title = 'yiwancheng'">已完成</button>
       <button
         @click="shanchuxuanzhongxiang"
-        v-show="todos.filter(todo => todo.finished.finished).length"
+        v-show="todos.filter(todo => todo.finished).length"
       >删除选中项</button>
     </div>
   </div>
@@ -39,62 +34,54 @@ export default {
       content: "",
       todos: [],
       title: "all",
-      text: "",
-      display: false
+      text: ""
     };
   },
   methods: {
     access() {
       if (this.content != "") {
-        // this.todos.push({
-        //   content: { content: this.content },
-        //   id: { id: new Date().valueOf() },
-        //   finished: { finished: false }
-        // });
-        // let timestamp = new Date().valueOf()
-        // this.todos = {
-        //   todo: {
-        //     content: this.content,
-        //     id: new Date().valueOf(),
-        //     finished: false
-        //   }
-        // };
         this.todos.push({
-          todo: {
-            content: this.content,
-            id: new Date().valueOf(),
-            finished: false
-          },
-          id: { id: new Date().valueOf() },
-          finished: { finished: false }
+          content: this.content,
+          id: new Date().valueOf(),
+          finished: false,
+          display: false
         });
         this.content = "";
       }
     },
     shanchu(item) {
-      this.todos = this.todos.filter(todo => todo.id.id != item.id.id);
+      this.todos = this.todos.filter(todo => todo.id != item.id);
     },
     quanxuan() {
-      if (this.todos.filter(todo => todo.finished.finished).length == 0) {
-        this.todos.map(todo => (todo.finished.finished = true));
-      } else if (
-        this.todos.filter(todo => !todo.finished.finished).length == 0
-      ) {
-        this.todos.map(todo => (todo.finished.finished = false));
+      if (this.todos.filter(todo => todo.finished).length == 0) {
+        this.todos.map(todo => (todo.finished = true));
+      } else if (this.todos.filter(todo => !todo.finished).length == 0) {
+        this.todos.map(todo => (todo.finished = false));
       } else {
-        this.todos.map(todo => (todo.finished.finished = true));
+        this.todos.map(todo => (todo.finished = true));
       }
     },
     shanchuxuanzhongxiang() {
-      this.todos = this.todos.filter(todo => !todo.finished.finished);
+      this.todos = this.todos.filter(todo => !todo.finished);
+    },
+    shuangji(item) {
+      this.text = item.content;
+      let array1 = this.todos.filter(todo => todo.id == item.id);
+      array1.map(todo => (todo.display = true));
+      localStorage.setItem("todos2", JSON.stringify(this.todos));
+    },
+    inputEnter(item) {
+      item.content = this.text;
+      item.display = !item.display;
+      localStorage.setItem("todos2", JSON.stringify(this.todos));
     }
   },
   computed: {
     filters() {
       if (this.title == "yiwancheng") {
-        return this.todos.filter(todo => todo.finished.finished);
+        return this.todos.filter(todo => todo.finished);
       } else if (this.title == "weiwancheng") {
-        return this.todos.filter(todo => !todo.finished.finished);
+        return this.todos.filter(todo => !todo.finished);
       } else {
         return this.todos;
       }

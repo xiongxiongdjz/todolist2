@@ -11,8 +11,8 @@
       <ul>
         <li v-for="item in filters" :key="item.id">
           <button @click="item.finished = !item.finished">完成</button>
-          <span v-show="!item.display" @dblclick="shuangji(item)">{{item.content}}</span>
-          <input type="text" v-model="text" v-show="item.display" @keyup.enter="inputEnter(item)" />
+          <span @dblclick="shuangji(item)" v-show="item.id != id">{{item.content}}</span>
+          <input type="text" v-model="text" v-show="item.id === id" @keyup.enter="inputEnter(item)" />
           <button @click="shanchu(item)">删除</button>
         </li>
       </ul>
@@ -28,13 +28,16 @@
 </template>
 
 <script>
+import aInput from "./subcomponents/input";
 export default {
   data() {
     return {
       content: "",
       todos: [],
       title: "all",
-      text: ""
+      inputText: "",
+      text: "",
+      id: null
     };
   },
   methods: {
@@ -43,8 +46,7 @@ export default {
         this.todos.push({
           content: this.content,
           id: new Date().valueOf(),
-          finished: false,
-          display: false
+          finished: false
         });
         this.content = "";
       }
@@ -65,14 +67,12 @@ export default {
       this.todos = this.todos.filter(todo => !todo.finished);
     },
     shuangji(item) {
-      this.text = item.content;
-      let array1 = this.todos.filter(todo => todo.id == item.id);
-      array1.map(todo => (todo.display = true));
-      localStorage.setItem("todos2", JSON.stringify(this.todos));
+      this.id = item.id;
+      this.text = item.content
     },
     inputEnter(item) {
       item.content = this.text;
-      item.display = !item.display;
+      this.id = null;
       localStorage.setItem("todos2", JSON.stringify(this.todos));
     }
   },

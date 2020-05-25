@@ -49,13 +49,13 @@ export default {
     },
     selectAllJudge() {
       if (this.todos.every(todo => todo.finish)) {
-        this.todos.forEach(todo => todo.finish = false);
+        this.todos.forEach(todo => (todo.finish = false));
         localStorage.setItem("todos", JSON.stringify(this.todos));
       } else if (this.todos.some(todo => todo.finish)) {
-        this.todos.forEach(todo => todo.finish = true);
+        this.todos.forEach(todo => (todo.finish = true));
         localStorage.setItem("todos", JSON.stringify(this.todos));
       } else {
-        this.todos.forEach(todo => todo.finish = true);
+        this.todos.forEach(todo => (todo.finish = true));
         localStorage.setItem("todos", JSON.stringify(this.todos));
       }
     },
@@ -112,7 +112,11 @@ export default {
     }
   },
   created() {
-    this.todos = JSON.parse(localStorage.getItem("todos"));
+    if (JSON.parse(localStorage.getItem("todos")) != null) {
+      this.todos = JSON.parse(localStorage.getItem("todos"));
+    } else {
+      localStorage.setItem("todos", JSON.stringify(this.todos));
+    }
   }
 };
 </script>

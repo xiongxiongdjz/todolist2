@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <router-link to="/todolist2">2</router-link>
     <router-view />
   </div>
 </template>
@@ -13,5 +12,6 @@ body {
   padding: 0;
   margin: 0;
   background: #F5F5F5;
+  text-align: center;
 }
 </style>

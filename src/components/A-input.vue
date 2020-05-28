@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     select() {
-      if (this.todos.every(todo => todo.finish)) {
+      if (this.todos.every(todo => todo.completed)) {
         return true;
       } else {
         return false;

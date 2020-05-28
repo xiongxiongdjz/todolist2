@@ -12,7 +12,7 @@
             :todoContentChange="todoContentChange"
             :todoOut="todoOut"
             :todoSelect="todoSelect"
-            :finish="item.finish"
+            :finish="item.completed"
           />
         </li>
       </ul>
@@ -27,6 +27,7 @@
 import Ainput from "./A-input";
 import Atodo from "./A-todo";
 import Abutton from "./A-button";
+import axios from "axios";
 export default {
   data() {
     return {
@@ -41,39 +42,52 @@ export default {
   },
   methods: {
     access(content) {
-      this.todos.push({
-        content: content,
-        finish: false,
-        id: new Date().valueOf()
-      });
+      // 新建资源.post
+      axios
+        .post("http://10.7.10.2:9000/todos", { title: content })
+        .then(res => {
+          this.todos.push(res.data);
+        });
     },
+    // 选中所有
     selectAllJudge() {
-      if (this.todos.every(todo => todo.finish)) {
-        this.todos.forEach(todo => (todo.finish = false));
-        localStorage.setItem("todos", JSON.stringify(this.todos));
-      } else if (this.todos.some(todo => todo.finish)) {
-        this.todos.forEach(todo => (todo.finish = true));
-        localStorage.setItem("todos", JSON.stringify(this.todos));
+      if (this.todos.every(todo => todo.completed)) {
+        this.todos.forEach(todo => (todo.completed = false));
+      } else if (this.todos.some(todo => todo.completed)) {
+        this.todos.forEach(todo => (todo.completed = true));
       } else {
-        this.todos.forEach(todo => (todo.finish = true));
-        localStorage.setItem("todos", JSON.stringify(this.todos));
+        this.todos.forEach(todo => (todo.completed = true));
       }
     },
+    // 改变内容
     todoContentChange(id, newContent) {
-      const index = this.todos.findIndex(todo => todo.id == id);
-      const todo = this.todos[index];
-      todo.content = newContent;
-      this.todos.splice(index, 1, todo);
+      axios
+        .patch("http://10.7.10.2:9000/todos" + "/" + id, {
+          title: newContent
+        })
+        .then(res => {
+          const index = this.todos.findIndex(todo => todo.id == id);
+          this.todos.splice(index, 1, res.data);
+        });
     },
+    // 删除
     todoOut(id) {
-      const index = this.todos.findIndex(todo => todo.id == id);
-      this.todos.splice(index, 1);
+      axios.delete("http://10.7.10.2:9000/todos" + "/" + id).then(res => {
+        const index = this.todos.findIndex(todo => todo.id == id);
+        this.todos.splice(index, 1);
+      });
     },
+    // 选择
     todoSelect(id) {
       const index = this.todos.findIndex(todo => todo.id == id);
       const todo = this.todos[index];
-      todo.finish = !todo.finish;
-      this.todos.splice(index, 1, todo);
+      axios
+        .patch("http://10.7.10.2:9000/todos" + "/" + id, {
+          completed: !todo.completed
+        })
+        .then(res => {
+          this.todos.splice(index, 1, res.data);
+        });
     },
     titleChange(title) {
       switch (this.title) {
@@ -91,32 +105,37 @@ export default {
       }
     },
     outSelected() {
-      const newTodos = this.todos.filter(todo => !todo.finish);
+      const newTodos = this.todos.filter(todo => !todo.completed);
       this.todos = newTodos;
     }
   },
   computed: {
     filters() {
       if (this.title == "completed") {
-        return this.todos.filter(todo => todo.finish);
+        return this.todos
+          .filter(todo => todo.completed)
+          .sort((a, b) => a.id - b.id);
       } else if (this.title == "undone") {
-        return this.todos.filter(todo => !todo.finish);
+        return this.todos
+          .filter(todo => !todo.completed)
+          .sort((a, b) => a.id - b.id);
       } else {
-        return this.todos;
+        return this.todos.sort((a, b) => a.id - b.id);
       }
     }
   },
   watch: {
-    todos(newValue, oldValue) {
-      localStorage.setItem("todos", JSON.stringify(newValue));
-    }
   },
   created() {
-    if (JSON.parse(localStorage.getItem("todos")) != null) {
-      this.todos = JSON.parse(localStorage.getItem("todos"));
-    } else {
-      localStorage.setItem("todos", JSON.stringify(this.todos));
-    }
+    // 取出资源.get
+    axios
+      .get("http://10.7.10.2:9000/todos")
+      .then(res => {
+        this.todos = res.data;
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 };
 </script>

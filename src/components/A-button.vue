@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     display() {
-      return this.todos.some(todo => todo.finish)
+      return this.todos.some(todo => todo.completed)
     }
   },
   watch: {

@@ -15,7 +15,7 @@
 export default {
   data() {
     return {
-      content: this.item.content,
+      content: this.item.title,
       status: false,
       selected: this.finish
     };

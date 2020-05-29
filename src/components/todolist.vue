@@ -53,7 +53,6 @@ export default {
     selectAllJudge() {
       const everys = this.todos.every(todo => todo.completed);
       const somes = this.todos.some(todo => todo.completed);
-      const noEverys = this.todos.every(todo => !todo.completed);
 
       const trueTodos = this.todos.filter(todo => todo.completed);
       const trueIds = trueTodos.map(todo => todo.id);
@@ -96,7 +95,7 @@ export default {
     // 改变内容  updata  .put()  .patch()
     todoContentChange(id, newContent) {
       axios
-        .patch("http://10.7.10.2:9000/todos" + "/" + id, { title: newContent })
+        .patch(`http://10.7.10.2:9000/todos/${id}`, { title: newContent })
         .then(res => {
           const index = this.todos.findIndex(todo => todo.id == id);
           this.todos.splice(index, 1, tes.data);
@@ -104,7 +103,7 @@ export default {
     },
     // 删除 delete  .post()  .delete()
     todoOut(id) {
-      axios.delete("http://10.7.10.2:9000/todos" + "/" + id).then(res => {
+      axios.delete(`http://10.7.10.2:9000/todos/${id}`).then(res => {
         const index = this.todos.findIndex(todo => todo.id == id);
         const todo = this.todos[index];
         this.todos.splice(index, 1);
@@ -138,7 +137,7 @@ export default {
           break;
       }
     },
-    // 删除已选
+    // 删除已选 delete  .delete() .post()
     outSelected() {
       // todos存放completed=true的项
       const todos = this.todos.filter(todo => todo.completed);
